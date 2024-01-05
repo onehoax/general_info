@@ -3,5 +3,5 @@
 
 # Angular
 - Get user details after login
-- [1](https://stackoverflow.com/questions/49185537/how-to-pass-current-user-between-components-in-angular2)
-- [2](https://stackoverflow.com/questions/72937664/how-to-get-user-details-after-login-in-angular)
+  - [1](https://stackoverflow.com/questions/49185537/how-to-pass-current-user-between-components-in-angular2)
+  - [2](https://stackoverflow.com/questions/72937664/how-to-get-user-details-after-login-in-angular)
