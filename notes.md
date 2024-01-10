@@ -7,4 +7,4 @@
   - [2](https://stackoverflow.com/questions/72937664/how-to-get-user-details-after-login-in-angular)
 
 -  Angular 17
-  - [What's new](https://www.angulararchitects.io/blog/whats-new-in-angular-17/)
+   - [What's new](https://www.angulararchitects.io/blog/whats-new-in-angular-17/)
