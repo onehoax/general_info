@@ -8,3 +8,8 @@
 
 -  Angular 17
    - [What's new](https://www.angulararchitects.io/blog/whats-new-in-angular-17/)
+   - [SSR](https://medium.com/@saikiranmaddukuri22/server-side-rendering-explained-in-brief-words-angular-17-76d23a30ae24)
+ 
+# General
+## Front
+- [Web vitals](https://web.dev/explore/learn-core-web-vitals)
