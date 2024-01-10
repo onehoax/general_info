@@ -19,11 +19,18 @@ export class PermissionRefresh {
     return await this.permissionRepository.findAll();
   }
 
+  private excludeParams(path: string): string {
+    const paramsStartIndex: number = path.indexOf(":");
+    if (paramsStartIndex > 0) path = path.substring(0, paramsStartIndex - 1);
+    return path;
+  }
+
   private getCurrentEndPoints(permissions: Permission[]): Map<string, EndPoint> {
     const currentEndPoints: Map<string, EndPoint> = new Map();
     permissions.forEach((permission: Permission): void => {
-      const path: string = permission.path.value;
+      let path: string = permission.path.value;
       const method: string = permission.method.value;
+
       currentEndPoints.set(path + "-" + method, {
         path: path,
         method: method,
@@ -36,12 +43,15 @@ export class PermissionRefresh {
 
   private getAvailableEndPoints(): Map<string, EndPoint> {
     const availableEndPoints: Map<string, EndPoint> = new Map();
-    this.endPointService
-      .getAll()
-      .forEach(
-        (endPoint: EndPoint): Map<string, EndPoint> =>
-          availableEndPoints.set(endPoint.path + "-" + endPoint.method, endPoint),
-      );
+    this.endPointService.getAll().forEach((endPoint: EndPoint): void => {
+      endPoint.path = this.excludeParams(endPoint.path);
+      let path: string = endPoint.path;
+      const method: string = endPoint.method;
+
+      const endPointKey: string = path + "-" + method;
+      if (!availableEndPoints.has(endPointKey))
+        availableEndPoints.set(path + "-" + method, endPoint);
+    });
 
     return availableEndPoints;
   }
@@ -51,8 +61,10 @@ export class PermissionRefresh {
     availableEndPoints: Map<string, EndPoint>,
   ): EndPoint[] {
     const missingEndpoints: EndPoint[] = [];
-    for (const key of availableEndPoints.keys())
-      if (!currentEndPoints.has(key)) missingEndpoints.push(availableEndPoints.get(key)!);
+    for (const key of availableEndPoints.keys()) {
+      const availableEndPoint: EndPoint | undefined = availableEndPoints.get(key);
+      if (!currentEndPoints.has(key) && availableEndPoint) missingEndpoints.push(availableEndPoint);
+    }
 
     return missingEndpoints;
   }
@@ -62,8 +74,10 @@ export class PermissionRefresh {
     availableEndPoints: Map<string, EndPoint>,
   ): EndPoint[] {
     const surPlusEndPoints: EndPoint[] = [];
-    for (const key of currentEndPoints.keys())
-      if (!availableEndPoints.has(key)) surPlusEndPoints.push(currentEndPoints.get(key)!);
+    for (const key of currentEndPoints.keys()) {
+      const currentEndPoint: EndPoint | undefined = currentEndPoints.get(key);
+      if (!availableEndPoints.has(key) && currentEndPoint) surPlusEndPoints.push(currentEndPoint);
+    }
 
     return surPlusEndPoints;
   }
@@ -71,16 +85,12 @@ export class PermissionRefresh {
   private buildPostRequests(endPoints: EndPoint[]): PermissionPrimitive[] {
     const postRequests: PermissionPrimitive[] = [];
     endPoints.forEach((endPoint: EndPoint): void => {
-      const path: string = endPoint.path;
+      let path: string = endPoint.path;
       const pathSplit: string[] = path.split("/");
       const module: string = pathSplit[2];
-      const isSingleResource: boolean = pathSplit[pathSplit.length - 1].includes(":");
       const method: string = endPoint.method;
-      const singleResource: string = ` a ${module}`;
-      const manyResources: string = ` ${module}s`;
-      const descriptionEnding: string = isSingleResource ? singleResource : manyResources;
-      const description: string =
-        PermissionDescriptionEnum[method.toUpperCase()] + descriptionEnding;
+      const description: string = `${PermissionDescriptionEnum[method.toUpperCase()]} ${module}s`;
+
       postRequests.push({
         id: uuidv4(),
         module: module,
@@ -98,18 +108,20 @@ export class PermissionRefresh {
 
   private getIdPermissionsToDelete(endPoints: EndPoint[]): string[] {
     const permissionIds: string[] = [];
-    endPoints.forEach((endPoint: EndPoint): number => permissionIds.push(endPoint.id!));
+    endPoints.forEach((endPoint: EndPoint): void => {
+      if (endPoint.id) permissionIds.push(endPoint.id);
+    });
+
     return permissionIds;
   }
 
   private async createPermissions(requests: PermissionPrimitive[]): Promise<PermissionPrimitive[]> {
     if (requests.length === 0) return [];
 
-    const permissions: Permission[] = [];
-
-    requests.forEach((request: PermissionPrimitive): void => {
-      permissions.push(Permission.fromPrimitives(request));
-    });
+    const permissions: Permission[] = requests.map(
+      (permissionPrimitive: PermissionPrimitive): Permission =>
+        Permission.fromPrimitives(permissionPrimitive),
+    );
 
     await this.permissionRepository.createMany(permissions);
 
@@ -119,9 +131,9 @@ export class PermissionRefresh {
   private async deletePermissions(ids: string[]): Promise<PermissionPrimitive[]> {
     if (ids.length === 0) return [];
 
-    const permissionIds: PermissionId[] = [];
-
-    ids.forEach((id: string): number => permissionIds.push(new PermissionId(id)));
+    const permissionIds: PermissionId[] = ids.map(
+      (id: string): PermissionId => new PermissionId(id),
+    );
 
     await this.permissionRepository.deleteMany(permissionIds);
 

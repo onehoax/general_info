@@ -6,6 +6,11 @@ import { HttpAdapterHost } from "@nestjs/core";
 export class EndPointsService {
   public constructor(private adapterHost: HttpAdapterHost) {}
 
+  /**
+   * Get all endpoints available in application
+   *
+   * @returns {EndPoint[]}
+   */
   public getAll(): EndPoint[] {
     const adapter = this.adapterHost.httpAdapter.getInstance();
     const stack = adapter._router.stack;

@@ -1,0 +1,109 @@
+<div class="card px-3 py-3">
+  <p-toolbar styleClass="mb-4">
+    <ng-template pTemplate="left">
+      <div class="my-2">
+        <p-dropdown
+          [style]="{ width: '15rem' }"
+          [options]="roles"
+          [(ngModel)]="selectedRole"
+          (onChange)="
+            resetTreeProperties();
+            clearRolePermissions();
+            getRolePermissions();
+            disableEnableTree(true)
+          "
+          (onClear)="
+            selectedRole = {};
+            clearRolePermissions();
+            resetTreeProperties();
+            disableEnableTree(false)
+          "
+          optionLabel="name"
+          [showClear]="true"
+          placeholder="Select a Role"
+          class="mr-2">
+        </p-dropdown>
+        <app-button
+          label="{{ 'common.buttons.new' | translate }}"
+          icon="pi pi-plus"
+          class="p-button-success mr-2"
+          [method]="MethodEnum.CREATE"
+          (eventEmitter)="chooseMethod($event)"></app-button>
+        <app-button
+          label="{{ 'common.buttons.edit' | translate }} {{ 'common.labels.name' | translate }}"
+          icon="pi pi-pencil"
+          class="p-button-warning mr-2"
+          [method]="MethodEnum.UPDATE"
+          [disabled]="!selectedRole || checkIfObjectEmpty(selectedRole)"
+          (eventEmitter)="chooseMethod($event)">
+        </app-button>
+        <app-button
+          label="{{ 'common.buttons.delete' | translate }}"
+          icon="pi pi-trash"
+          class="p-button-danger"
+          [method]="MethodEnum.OPEN_DELETE_DIALOG"
+          [disabled]="!selectedRole || checkIfObjectEmpty(selectedRole)"
+          (eventEmitter)="chooseMethod($event)">
+        </app-button>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="right">
+      <app-button
+        label="{{ 'common.buttons.refresh' | translate }} {{ 'permission.title' | translate }}"
+        icon="pi pi-refresh"
+        class="p-button-info"
+        [method]="MethodEnum.REFRESH_PERMISSIONS"
+        (eventEmitter)="chooseMethod($event)">
+      </app-button>
+    </ng-template>
+  </p-toolbar>
+
+  <div class="flex justify-content-center h-30rem">
+    <div class="w-7 p-5">
+      <h3 class="text-center">{{ "permission.title" | translate }}</h3>
+      <p-tree
+        class="w-full"
+        scrollHeight="20rem"
+        containerStyleClass="w-full"
+        display="chip"
+        selectionMode="checkbox"
+        [value]="availablePermissionsTree"
+        [(selection)]="selectedPermissionsTree">
+        <ng-template let-node pTemplate="default">
+          {{ node.label }}
+        </ng-template>
+      </p-tree>
+    </div>
+  </div>
+</div>
+
+<div class="flex justify-content-center">
+  <app-button
+    label="{{ 'common.buttons.save' | translate }} {{ 'common.labels.change' | translate }} "
+    icon="pi pi-save"
+    class="p-button-warning mr-2"
+    [method]="MethodEnum.OPEN_UPDATE_PERMISSIONS_DIALOG"
+    [disabled]="!selectedRole || checkIfObjectEmpty(selectedRole)"
+    (eventEmitter)="chooseMethod($event)">
+  </app-button>
+</div>
+
+<app-dialog
+  [conditional]="!checkIfObjectEmpty(selectedRole)"
+  [isVisible]="updatePermissionsDialog"
+  message="update permissions for"
+  [roleName]="selectedRole.name!"
+  [methodNo]="MethodEnum.CLOSE_UPDATE_PERMISSIONS_DIALOG"
+  [methodYes]="MethodEnum.UPDATE_PERMISSIONS"
+  (eventEmitter)="chooseMethod($event)">
+</app-dialog>
+
+<app-dialog
+  [conditional]="!checkIfObjectEmpty(selectedRole)"
+  [isVisible]="deleteProductDialog"
+  message="delete"
+  [roleName]="selectedRole.name!"
+  [methodNo]="MethodEnum.CLOSE_DELETE_DIALOG"
+  [methodYes]="MethodEnum.DELETE"
+  (eventEmitter)="chooseMethod($event)">
+</app-dialog>
