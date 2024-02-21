@@ -62,8 +62,6 @@ speed = (5/7) + (5/6) + (5/8) / 3
 
 **Normalize through variation `z-score`**
 
-### How long is a user staying on the platform
-
 ### Relate tickets related to bugs with the perception of the company
 
 Surveys with clients
