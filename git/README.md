@@ -10,3 +10,9 @@
 ## Branch
 
 - [Create a local branch from an existing remote branch](https://stackoverflow.com/questions/24301914/how-to-create-a-local-branch-from-an-existing-remote-branch)
+- [Revert to a previous commit](https://stackoverflow.com/questions/4114095/how-do-i-revert-a-git-repository-to-a-previous-commit)
+
+## Merge VS Rebase
+
+- [Overview](https://stackoverflow.com/questions/16666089/whats-the-difference-between-Git-merge-and-git-rebase)
+- [Explanation](https://www.atlassian.com/git/tutorials/merging-vs-rebasing)
