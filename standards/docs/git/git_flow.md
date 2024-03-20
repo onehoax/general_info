@@ -1,6 +1,6 @@
 # Branch Flow
 
-![git_flow](../resources/git_flow_fork.png)
+![git_flow](../../resources/git_flow_fork.png)
 
 **Note:** Developers branch from and make PRs to the `dev` branch and below.
 
@@ -18,8 +18,18 @@
 2.  Create a new branch `foo` from your fork's `dev` branch to develop the story
 3.  Develop the story on branch `foo`
 4.  When you're done developing the story
+
+    - `Lint` and `format` your code
+
+      ```bash
+      > yarn lint
+
+      > yarn format
+      ```
+
     - **SQUASH MERGE** into your fork's `dev` branch (to keep the upstream repository's commit history clean)
     - Commit with a message starting with the identifier of the story (e.g.: `git commit -m "GAN-188: ..."`)
+
 5.  Make a PR to merge your fork's `dev` branch into the upstream's story branch created from JIRA in step 1 (e.g.: `GAN-188`)
 6.  Once the PR is accepted and merged
     - Delete branch `foo` on your fork
